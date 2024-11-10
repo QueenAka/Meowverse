@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Meowverse</title>
+    <style>
+      html,
+      body {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        background: black;
+        overflow: hidden;
+      }
+
+      img {
+        position: fixed;
+        max-height: 50px;
+        transition: opacity 0.1s ease-in-out;
+        background: white;
+      }
+
+      #frame {
+        position: fixed;
+        z-index: 9999;
+        width: calc(100% - 100px);
+        height: calc(100% - 100px);
+        border: 50px solid black;
+        pointer-events: none;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div id="frame"></div>
+  </body>
+  <script>
+    document.addEventListener("click", (e) => {
+      if (e.target.id.includes("cat")) {
+        e.target.style.opacity = 0;
+        setTimeout(() => {
+          e.target.remove();
+        }, 250);
+        return;
+      }
+      const numCats = Math.floor(Math.random() * 5) + 1;
+      for (let i = 0; i < numCats; i++) {
+        const cat = document.createElement("img");
+        const id = new Date().getTime() + Math.random();
+        cat.id = "cat@" + id;
+        cat.src = `https://cataas.com/cat?${id}`;
+        cat.style.position = "absolute";
+        cat.style.top = `${e.clientY}px`;
+        cat.style.left = `${e.clientX}px`;
+        cat.style.opacity = 0;
+        document.body.appendChild(cat);
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 2 + 1;
+        let currentX = e.clientX;
+        let currentY = e.clientY;
+        let currentRotation = 0;
+        const moveCat = () => {
+          currentX += Math.cos(angle) * speed;
+          currentY += Math.sin(angle) * speed;
+          currentRotation += Math.random() * 2 * Math.PI * 0.05;
+          if (currentX + cat.width < 0) {
+            currentX = window.innerWidth;
+          } else if (currentX - cat.width > window.innerWidth) {
+            currentX = -cat.width;
+          }
+
+          if (currentY + cat.height < 0) {
+            currentY = window.innerHeight;
+          } else if (currentY - cat.height > window.innerHeight) {
+            currentY = -cat.height;
+          }
+
+          cat.style.left = `${currentX}px`;
+          cat.style.top = `${currentY}px`;
+          cat.style.transform = `rotate(${currentRotation}deg)`;
+          requestAnimationFrame(moveCat);
+        };
+        moveCat();
+        setTimeout(() => {
+          cat.style.opacity = 1;
+        }, 100);
+      }
+    });
+
+    document.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      killAll();
+    });
+
+    function killAll() {
+      document.querySelectorAll("img").forEach((img) => {
+        img.style.opacity = 0;
+        setTimeout(() => {
+          img.remove();
+        }, 250);
+      });
+    }
+  </script>
+</html>
